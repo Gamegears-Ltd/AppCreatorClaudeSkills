@@ -14,6 +14,6 @@ claude plugin install prototype-shipping@AppCreatorClaudeSkills
 
 ## Что внутри
 
-### prototype-shipping · 1.0.4
+### prototype-shipping · 1.0.5
 
 Сдать прототип GameGears в Google Play и подключить к нему аналитику. Use when the user is building a GameGears prototype and says «залей в стор», «сдай игру», «подключи аналитику/события», «какие события слать», «что нужно для выкладки», «статус моей сдачи», "ship the prototype", "upload to Play", "wire up analytics events". НЕ для чужих игр и не для выпуска в Live — выпуск жмёт человек.
