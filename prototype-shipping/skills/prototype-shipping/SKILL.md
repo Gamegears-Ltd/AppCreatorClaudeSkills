@@ -13,7 +13,8 @@ Google в закрытое тестирование. В магазин ниче�
 Требования живут на стойке и меняются. Ответ по памяти — это устаревший ответ.
 
 ```bash
-curl -s -H "Authorization: Bearer $INTAKE_TOKEN" https://intake.gamegears.ai/intake/contracts.json
+TOKEN="${INTAKE_TOKEN:-$(cat ~/.gamegears/intake-token 2>/dev/null)}"
+curl -s -H "Authorization: Bearer $TOKEN" https://intake.gamegears.ai/intake/contracts.json
 ```
 
 Отдаёт список контрактов: у каждого `read` — страница для человека, `machine` — схемы и примеры
@@ -30,7 +31,8 @@ curl -s -H "Authorization: Bearer $INTAKE_TOKEN" https://intake.gamegears.ai/int
 
 ```bash
 BASE=https://intake.gamegears.ai/intake
-AUTH="Authorization: Bearer $INTAKE_TOKEN"
+TOKEN="${INTAKE_TOKEN:-$(cat ~/.gamegears/intake-token 2>/dev/null)}"
+AUTH="Authorization: Bearer $TOKEN"
 
 SID=$(curl -s -H "$AUTH" -X POST $BASE/new | jq -r .sid)
 curl -s -H "$AUTH" -X PUT --data-binary @delivery.zip "$BASE/$SID/f/delivery.zip"
@@ -58,17 +60,13 @@ curl -s -H "$AUTH" https://intake.gamegears.ai/intake/status/com.gamegears.yourg
 
 ## Ключ
 
-`INTAKE_TOKEN` — личный ключ, по нему видно, кто сдал. Человек берёт его сам, один раз: открывает
-https://intake.gamegears.ai/intake под корпоративным аккаунтом, жмёт «Получить ключ» и вставляет
-готовую строку в своё окружение. После этого всё делает Клод.
+Личный ключ стойки лежит в файле `~/.gamegears/intake-token` (одна строка) или в переменной
+`INTAKE_TOKEN`. По нему видно, кто сдал. Человек получает его сам, один раз: открывает
+https://intake.gamegears.ai/intake под корпоративным аккаунтом, жмёт «Получить ключ» и отправляет
+тебе появившийся текст — в нём команды установки и сам ключ. Ты выполняешь команды, кладёшь ключ
+в файл и **не печатаешь его в ответе**.
 
-Нет ключа (стойка отвечает 401) — не пытайся обойти дверь и не проси ключ у кого-то другого: он
-выдаётся только самому человеку, в браузере. Скажи ему ровно две вещи:
-
-1. открыть https://intake.gamegears.ai/intake, нажать «Получить ключ» и вставить строку своей
-   системы в терминал;
-2. если он уже это делал — открыть **новое** окно терминала и запустить тебя там: на Windows
-   `setx` отдаёт переменную только новым процессам, поэтому в текущем окне ключа не видно.
-
-Второй пункт не пропускай. Человек, который ключ уже завёл, получит от тебя «нет доступа» и решит,
-что сломана стойка, — а сломано окно терминала.
+Нет ключа (файла нет или стойка отвечает 401) — не пытайся обойти дверь и не проси ключ у кого-то
+другого: он выдаётся только самому человеку, в браузере. Скажи ему одно: открыть
+https://intake.gamegears.ai/intake, нажать «Получить ключ» и прислать тебе текст. Старый ключ при
+этом перестаёт работать — это нормально, ты просто перезапишешь файл.
