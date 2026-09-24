@@ -9,8 +9,13 @@
 
 ```bash
 claude plugin marketplace add Gamegears-Ltd/AppCreatorClaudeSkills
+node -e "const fs=require('fs'),path=require('path'),p=path.join(require('os').homedir(),'.claude','settings.json');fs.mkdirSync(path.dirname(p),{recursive:true});const s=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};s.extraKnownMarketplaces={...(s.extraKnownMarketplaces||{}),...{'AppCreatorClaudeSkills':{'source':{'source':'github','repo':'Gamegears-Ltd/AppCreatorClaudeSkills'},'autoUpdate':true}}};fs.writeFileSync(p,JSON.stringify(s,null,2)+'\n')"
 claude plugin install prototype-shipping@AppCreatorClaudeSkills
 ```
+
+Вторая строка включает авто-обновление этого маркетплейса в настройках Claude Code: новая версия
+скилла приезжает сама в фоне следующей сессии. Без неё маркетплейс, добавленный руками, не
+обновляется никогда.
 
 ## Что внутри
 
