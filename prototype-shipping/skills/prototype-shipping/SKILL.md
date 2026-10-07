@@ -1,12 +1,14 @@
 ---
 name: prototype-shipping
-description: Сдать прототип GameGears в Google Play, подключив к нему аналитику ClickHouse и Meta SDK до сдачи и собрав страницу в сторе по контракту. Use when the user is building a GameGears prototype and says «залей в стор», «сдай игру», «подключи аналитику/события», «подключи Meta / Facebook SDK», «какие события слать», «что нужно для выкладки», «сделай страницу в сторе», «тексты и скриншоты для Play», «иконка / feature graphic», «настрой подпись билда», «upload-ключ / keystore», «иконка в билде», «отказ App store listing mismatch», «статус моей сдачи», "ship the prototype", "upload to Play", "wire up analytics events", "add Meta SDK", "store listing", "ASO", "sign the Android build", "listing mismatch". НЕ для чужих игр и не для выпуска в Live — выпуск жмёт человек.
+description: Сдать прототип студии GameGears в Google Play под издателем VibeByte (аккаунт Play Console — VibeByte, не GameGears), подключив к нему аналитику ClickHouse и Meta SDK до сдачи и собрав страницу в сторе по контракту. Use when the user is building a GameGears prototype and says «залей в стор», «сдай игру», «подключи аналитику/события», «подключи Meta / Facebook SDK», «какие события слать», «что нужно для выкладки», «сделай страницу в сторе», «тексты и скриншоты для Play», «иконка / feature graphic», «настрой подпись билда», «upload-ключ / keystore», «иконка в билде», «отказ App store listing mismatch», «статус моей сдачи», "ship the prototype", "upload to Play", "wire up analytics events", "add Meta SDK", "store listing", "ASO", "sign the Android build", "listing mismatch". НЕ для чужих игр и не для выпуска в Live — выпуск жмёт человек.
 ---
 
 # Сдача прототипа
 
 Конвейер сам заводит карточку в Google Play, заполняет анкеты и отправляет билд на проверку
-Google в закрытое тестирование. В магазин ничего не уходит: выпуск в Live жмёт человек.
+Google в закрытое тестирование. Издатель в карточке — **VibeByte**: все игры выкладываются в один
+аккаунт Play Console VibeByte, имя издателя ставит конвейер, в ответах его не спрашивают и
+«GameGears» в листинге не пишут. В магазин ничего не уходит: выпуск в Live жмёт человек.
 Порядок всегда один: сначала в игру ставятся модуль событий и Meta SDK (раздел «До сдачи»),
 потом собирается под листинг и подписывается `.aab` (разделы «Сборка под листинг» и «Подпись
 сборки»), потом сдача. Сборка без них стойкой не принимается.
@@ -43,7 +45,11 @@ curl -s -H "Authorization: Bearer $TOKEN" https://intake.gamegears.ai/intake/eve
    `project_pattern`) — оно одно и то же во всех сборках и запросах, и менять его потом нельзя.
 2. **Разложи файлы** по путям из `files[].path`, как есть. В содержимом подставь `{{project}}` и
    `{{package_name}}` (applicationId игры). Модуль `GgAnalytics.cs` поднимается сам и сам шлёт
-   `session_start`, `session_end`, `first_open` и `crash`; ничего звать при старте не надо.
+   `session_start`, `session_end` сразу при сворачивании, пульс `heartbeat` с FPS, `first_open`
+   и `crash`; ничего звать при старте не надо. На повторной сдаче набор скачивается заново и
+   кладётся поверх прежнего целиком — модуль, `gg-events.json` и манифест Meta SDK: стойка читает
+   сборку и отказывает той, что собрана по старому набору (нет `heartbeat`, нет `<queries>`),
+   называя, что переустановить.
 3. **Своя таблица событий** — `Assets/GameGears/Analytics/Resources/gg-events.json`. Это
    единственная таблица «событие + параметр → слот»: игра шлёт по ней, и этот же файл ты положишь в
    архив сдачи как манифест событий. Событие из контракта — с его именем и его слотами, своё —
@@ -70,7 +76,8 @@ curl -s -H "Authorization: Bearer $TOKEN" https://intake.gamegears.ai/intake/eve
    Пока значений нет, гейт сборки `GgAnalyticsBuildGate.cs` не даст собрать Android-билд — это
    намеренно: с заглушкой установки не засчитываются, и это выясняется после залива трафика.
 5. **Проверка на телефоне** — шаги в `verify_on_device`: события в logcat по тегу `GgAnalytics`,
-   `first_open` ровно один на два запуска, активация в Meta Events Manager.
+   `session_end` сразу при сворачивании, пульс раз в 5 с, `first_open` ровно один на два запуска,
+   у всех событий один и тот же `reg`, активация в Meta Events Manager.
 
 Что менять нельзя: имена и слоты обязательных событий, эндпоинт, файл состояния вместо
 PlayerPrefs. Нужен другой смысл параметра — свободный слот, а не переезд.
