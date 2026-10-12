@@ -64,7 +64,7 @@ curl -s -H "Authorization: Bearer $TOKEN" https://intake.gamegears.ai/intake/eve
 
    ```bash
    curl -s -H "$AUTH" -X POST -H 'Content-Type: application/json' \
-     -d '{"game_title":"Neon Rush","package_name":"com.gamegears.neonrush"}' \
+     -d '{"game_title":"Neon Rush","package_name":"com.vibebyte.neonrush"}' \
      https://intake.gamegears.ai/intake/meta-request
    ```
 
@@ -146,6 +146,12 @@ Google сверяет иконку лаунчера и имя под ней на
 Один архив: сборка `.aab`, файл ответов `.json`, графика, манифест событий — тот самый
 `gg-events.json` из проекта, — и манифест страницы в сторе. Имена файлов в ответах — голые, без папок.
 
+По желанию — свои рекламные креативы (видео и картинки: .mp4 .mov .webm .png .jpg .webp .gif):
+папкой `creatives/` в том же архиве. Если человек делал креативы к игре, спроси один раз, где
+лежит папка, и положи её в архив как есть. Стойка их не проверяет и в Play не отдаёт; когда игра
+выйдет в магазин, конвейер сам разложит их в Drive-папку маркетинга и даст ссылку в том же
+сообщении, где тегает маркетинг. Повторно сданные те же файлы второй раз не заливаются.
+
 ```bash
 BASE=https://intake.gamegears.ai/intake
 TOKEN="${INTAKE_TOKEN:-$(cat ~/.gamegears/intake-token 2>/dev/null)}"
@@ -181,7 +187,7 @@ curl -s -H "$AUTH" -X POST -H 'Content-Type: application/json' \
 ## Статус
 
 ```bash
-curl -s -H "$AUTH" https://intake.gamegears.ai/intake/status/com.gamegears.yourgame
+curl -s -H "$AUTH" https://intake.gamegears.ai/intake/status/com.vibebyte.yourgame
 ```
 
 `queued` — стойка приняла, конвейер не дошёл; `running` — идёт; `done` — заполнено, поле `review`
